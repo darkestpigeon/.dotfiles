@@ -75,9 +75,9 @@ copy_dotfiles () {
    echo "Copied dotfiles."
 }
 
-install_npm () {
-   if ! which npm > /dev/null; then
-      echo "npm is not installed. Installing..."
+install_node () {
+   if ! which node > /dev/null; then
+      echo "node is not installed. Installing..."
       sudo apt-get update
       sudo apt-get install -y ca-certificates curl gnupg
       sudo mkdir -p /etc/apt/keyrings
@@ -87,7 +87,7 @@ install_npm () {
       sudo apt-get update
       sudo apt-get install nodejs -y
    else
-      echo "npm is already installed."
+      echo "node is already installed."
    fi
 }
 
@@ -99,4 +99,4 @@ install_pyenv && install_virtualenv
 install_nvim
 install_zsh
 copy_dotfiles
-install_npm
+install_node
