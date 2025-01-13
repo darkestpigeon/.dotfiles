@@ -4,7 +4,7 @@ START_PATH=$(pwd)
 
 
 install_dependencies () {
-   sudo apt-get update && sudo apt-get install -y git gettext cmake unzip curl
+   sudo apt-get update; sudo apt-get install -y git gettext cmake unzip curl
 }
 
 install_tmux () {
@@ -20,7 +20,7 @@ install_tmux () {
 install_zsh () {
    if ! which zsh > /dev/null; then
       echo "zsh is not installed. Installing..."
-      sudo apt-get update && sudo apt-get install -y zsh
+      sudo apt-get update; sudo apt-get install -y zsh
       git clone https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
    else
       echo "zsh is already installed."
@@ -31,7 +31,7 @@ install_zsh () {
 
 copy_dotfiles () {
    cd ${START_PATH}
-   cp zsh/.zshrc ~/.zshrc
+   cp zsh/.zshrc.lite ~/.zshrc
    cp tmux/.tmux.conf ~/.tmux.conf
    echo "Copied dotfiles."
 }
