@@ -115,3 +115,6 @@ eval "$(pyenv virtualenv-init -)"
 #cuda
 export PATH=/usr/local/cuda/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
+#nim
+export PATH=/home/darkestpigeon/.nimble/bin:$PATH

@@ -35,6 +35,8 @@ vim.opt.colorcolumn = '80'
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+vim.g.python3_host_prog = os.getenv('HOME') .. '/.pyenv/versions/neovim/bin/python'
+
 -- [[ plugins ]]
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -159,6 +161,9 @@ require('lazy').setup({
     },
 
     'mbbill/undotree',
+
+    --
+    -- 'zah/nim.vim'
 }, {})
 
 
@@ -244,7 +249,7 @@ vim.defer_fn(function()
     require('nvim-treesitter.configs').setup({
 	ensure_installed = {
 	    'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash',
-	    'json', 'yaml', 'toml'
+	    'json', 'yaml', 'toml', 'nim'
 	},
 	auto_install = false,
 	highlight = { enable = true },
@@ -364,6 +369,7 @@ local servers = {
 	    telemetry = { enable = false },
 	}
     },
+    nim_langserver = {}
 }
 
 
@@ -388,6 +394,7 @@ mason_lspconfig.setup_handlers({
 	})
     end,
 })
+--
 
 
 -- [[ configure nvim-cmp ]]
