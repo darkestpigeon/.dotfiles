@@ -187,6 +187,27 @@ uninstall_node() {
     fi
 }
 
+# --- nim ---
+install_nim() {
+    if ! command_exists nim; then
+        echo "Installing nim via choosenim..."
+        curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+    else
+        echo "Nim is already installed."
+    fi
+}
+
+uninstall_nim() {
+    if command_exists nim; then
+        echo "Uninstalling nim (choosenim)..."
+        rm -rf "$HOME/.nimble" "$HOME/.choosenim"
+        rm -f "$HOME/.local/bin/nim" "$HOME/.local/bin/choosenim"
+        sudo apt-get remove --purge tmux -y
+    else
+        echo "Nim is not installed."
+    fi
+}
+
 # --- Main interactive loop ---
 echo "Select components to ${MODE}:"
 if [ "$MODE" == "install" ]; then
@@ -197,6 +218,7 @@ if [ "$MODE" == "install" ]; then
     prompt_yes_no "Install zsh and oh-my-zsh?" && install_list+=("zsh")
     prompt_yes_no "Copy dotfiles?"          && install_list+=("dotfiles")
     prompt_yes_no "Install Node.js?"        && install_list+=("node")
+    prompt_yes_no "Install Nim?"        && install_list+=("nim")
 else
     prompt_yes_no "Uninstall tmux?"          && uninstall_list+=("tmux")
     prompt_yes_no "Uninstall pyenv?"          && uninstall_list+=("pyenv")
@@ -205,6 +227,7 @@ else
     prompt_yes_no "Uninstall oh-my-zsh and remove zsh config?" && uninstall_list+=("zsh")
     prompt_yes_no "Remove dotfiles?"          && uninstall_list+=("dotfiles")
     prompt_yes_no "Uninstall Node.js?"        && uninstall_list+=("node")
+    prompt_yes_no "Uninstall Nim?"        && uninstall_list+=("nim")
 fi
 
 # Display summary and confirm
@@ -233,6 +256,7 @@ if [ "$MODE" == "install" ]; then
             zsh)         install_zsh ;;
             dotfiles)    copy_dotfiles ;;
             node)        install_node ;;
+            nim)         install_nim ;;
             *)           echo "Unknown component: $comp" ;;
         esac
     done
@@ -246,6 +270,7 @@ else
             zsh)         uninstall_zsh ;;
             dotfiles)    remove_dotfiles ;;
             node)        uninstall_node ;;
+            nim)         uninstall_nim ;;
             *)           echo "Unknown component: $comp" ;;
         esac
     done
