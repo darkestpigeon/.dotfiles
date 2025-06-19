@@ -22,6 +22,9 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.opt.colorcolumn = '80'
 
+vim.opt.tabstop = 2
+vim.opt.list = true
+
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
