@@ -32,5 +32,12 @@ eval "$(pyenv virtualenv-init -)"
 export PATH=/usr/local/cuda/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 
+# fnm and node
+FNM_PATH="$HOME/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+				export PATH="$FNM_PATH:$PATH"
+				eval "`fnm env`"
+fi
+
 # Nim paths (if applicable)
 export PATH=$HOME/.nimble/bin:$PATH

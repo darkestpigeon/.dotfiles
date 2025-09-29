@@ -253,7 +253,15 @@ local on_attach = function(_, bufnr)
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function() vim.lsp.buf.format() end, { desc = 'Format current buffer with LSP' })
 end
 
-require('which-key').register({
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(ev)
+    -- This will run whenever ANY LSP attaches to ANY buffer
+    on_attach(vim.lsp.get_client_by_id(ev.data.client_id), ev.buf)
+  end,
+})
+
+require('which-key').add({
   ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
   ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
   ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
@@ -263,8 +271,6 @@ require('which-key').register({
   ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
 })
 
-require('mason').setup()
-require('mason-lspconfig').setup()
 
 local servers = {
   clangd = {},
@@ -277,19 +283,20 @@ require('neodev').setup()
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
-local mason_lspconfig = require 'mason-lspconfig'
-mason_lspconfig.setup({ ensure_installed = vim.tbl_keys(servers) })
-mason_lspconfig.setup_handlers({
-  function(server_name)
-    require('lspconfig')[server_name].setup({
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = servers[server_name],
-      filetypes = (servers[server_name] or {}).filetypes,
-    })
-  end,
+require('mason').setup()
+require('mason-lspconfig').setup({
+  ensure_installed = vim.tbl_keys(servers),
+  handlers = {
+    function(server_name)
+      require('lspconfig')[server_name].setup({
+        capabilities = capabilities,
+        settings = servers[server_name],
+        filetypes = (servers[server_name] or {}).filetypes,
+      })
+    end,
+  }
 })
---
+
 
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
