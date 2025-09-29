@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+
+
+script_dir="$(dirname "$(realpath "$0")")"
+
+
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+install_dependencies() {
+    sudo apt-get update && sudo apt-get install -y \
+        git ninja-build gettext cmake unzip curl build-essential \
+        libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev \
+        libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev \
+        libffi-dev liblzma-dev ripgrep ca-certificates gnupg xclip || exit 1
+}
+
+install_tmux() {
+    if ! command_exists tmux; then
+        echo "Installing tmux"
+        sudo apt-get install -y tmux || { echo "failed to install tmux"; exit 1; }
+    fi
+}
+
+install_uv() {
+    if ! command_exists uv; then
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+    fi
+}
+
+install_neovim() {
+    if ! command_exists nvim; then
+        echo "Installing neovim"
+        (
+            git clone https://github.com/neovim/neovim.git "$HOME/neovim" &&
+            cd "$HOME/neovim" &&
+            git checkout stable &&
+            make CMAKE_BUILD_TYPE=Release &&
+            sudo make install ||
+            { echo "failed to install neovim"; exit 1; }
+        )
+    fi
+}
+
+install_zsh() {
+    if ! command_exists zsh; then
+        echo "Installing zsh"
+        sudo apt-get install -y zsh || { echo "failed to install zsh"; exit 1; }
+    fi
+    if [ ! -d "$HOME/.oh-my-zsh" ]; then
+        echo "Installing oh-my-zsh"
+        git clone https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh" || \
+            { echo "failed to install oh-my-zsh"; exit 1; }
+    fi
+    if [[ $SHELL != *zsh ]]; then
+        echo "Setting zsh as a login shell"
+        sudo chsh -s "$(which zsh)" "$(id -un)" || \
+            { echo "failed to set zsh as a login shell"; exit 1; }
+    fi
+}
+
+install_dotfiles() {
+    if [ ! -f "$HOME/.zshrc" ]; then
+        echo "copying .zshrc"
+        cp "$script_dir/zsh/.zshrc" "$HOME/.zshrc" || exit 1;
+    fi
+    if [ ! -f "$HOME/.tmux.conf" ]; then
+        echo "copying .tmux.conf"
+        cp "$script_dir/tmux/.tmux.conf" "$HOME/.tmux.conf" || exit 1;
+    fi
+    if [ ! -d "$HOME/.config/nvim" ]; then
+        echo "copying nvim/"
+        mkdir -p "$HOME/.config/nvim" && \
+            cp "$script_dir"/nvim/* "$HOME/.config/nvim/" || exit 1;
+    fi
+}
+
+install_node() {
+    FNM_PATH="$HOME/.local/share/fnm"
+    export PATH="$FNM_PATH:$PATH"
+    if [ ! -d "$FNM_PATH" ]; then
+        curl -o- https://fnm.vercel.app/install | bash || \
+            { echo "failed to install fnm (node version manager)"; exit 1; }
+    fi
+    eval "`fnm env`"
+    if ! command_exists node; then
+        fnm install 24 || { echo "failed to install nodejs"; exit 1; }
+    fi
+}
+
+install_nim() {
+    export PATH="$HOME/.nimble/bin:$PATH"
+    if ! command_exists choosenim || ! command_exists nim; then
+        echo "Installing nim (choosenim)"
+        curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
+    fi
+}
+
+
+usage="Usage: ./install all|deps|tmux|uv|neovim|zsh|dotfiles|node|nim"
+
+
+[[ $# != 1 ]] && { echo "$usage"; exit 1; }
+
+case $1 in
+    deps) install_dependencies ;;
+    tmux) install_tmux ;;
+    uv) install_uv ;;
+    neovim) install_neovim ;;
+    zsh) install_zsh ;;
+    dotfiles) install_dotfiles ;;
+    node) install_node ;;
+    nim) install_nim ;;
+    all)
+        install_dependencies
+        install_neovim
+        install_uv
+        install_zsh
+        install_node
+        install_nim
+        install_tmux
+        install_dotfiles
+        ;;
+    *)
+        echo "$usage"
+        exit 1;
+        ;;
+esac
