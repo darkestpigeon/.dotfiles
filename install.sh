@@ -96,5 +96,5 @@ fi
 export PATH="$HOME/.nimble/bin:$PATH"
 if ! command_exists choosenim || ! command_exists nim; then
     echo "Installing nim (choosenim)"
-    curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+    curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y
 fi
