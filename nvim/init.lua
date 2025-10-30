@@ -31,6 +31,7 @@ vim.opt.list = true
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+
 -- Specify Python host for Neovim
 vim.g.python3_host_prog = os.getenv('HOME') .. '/.pyenv/versions/neovim/bin/python'
 
@@ -50,6 +51,19 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Plugin setup using lazy.nvim
 require('lazy').setup({
+  -- Color scheme
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+    config = function()
+      require('catppuccin').setup({
+        transparent_background = true,
+      })
+      vim.cmd.colorscheme 'catppuccin'
+    end
+  },
+
   -- Git-related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
@@ -72,16 +86,6 @@ require('lazy').setup({
 
   -- Show pending keybinds
   { 'folke/which-key.nvim', opts = {} },
-
-  -- Color scheme
-  {
-    'catppuccin/nvim',
-    name = 'catppuccin',
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'catppuccin'
-    end,
-  },
 
   -- Status line plugin
   {
